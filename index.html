@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <title>Vizualizacija svjetskih potresa</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- TopoJSON za pretvaranje karte -->
+    <script src="https://unpkg.com/topojson-client@3"></script>
+</head>
+<body>
+
+    <div class="page">
+        <header>
+            <h1>Interaktivna vizualizacija svjetskih potresa</h1>
+            <p>Potresi magnitude 5.5 i više u razdoblju od 2000. do 2025. godine</p>
+        </header>
+
+        <section class="stats">
+            <div class="stat-card">
+                <h3>Ukupan broj potresa</h3>
+                <p id="total-earthquakes">Učitavanje...</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Raspon godina</h3>
+                <p>2000 - 2025</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Minimalna magnituda</h3>
+                <p>5.5</p>
+            </div>
+        </section>
+
+        <main class="dashboard">
+            <aside class="filters">
+                <h2>Filteri</h2>
+
+                <label for="year-filter">Godina</label>
+                <select id="year-filter">
+                    <option value="all">Sve godine</option>
+                </select>
+
+                <label for="magnitude-filter">Minimalna magnituda</label>
+                <select id="magnitude-filter">
+                    <option value="5.5">5.5+</option>
+                    <option value="6">6.0+</option>
+                    <option value="6.5">6.5+</option>
+                    <option value="7">7.0+</option>
+                    <option value="8">8.0+</option>
+                </select>
+
+                <button id="reset-btn">Reset filtera</button>
+            </aside>
+
+            <section class="map-section">
+                <h2>Karta svijeta s potresima</h2>
+                <svg id="map"></svg>
+            </section>
+        </main>
+
+        <section class="charts-placeholder">
+            <div>
+                <h3>Linijski graf</h3>
+                <p>Broj potresa po godinama dodat ćemo u sljedećem koraku.</p>
+            </div>
+
+            <div>
+                <h3>Stupčasti graf</h3>
+                <p>Raspodjelu magnituda dodat ćemo kasnije.</p>
+            </div>
+
+            <div>
+                <h3>Scatter plot</h3>
+                <p>Odnos magnitude i dubine dodat ćemo kasnije.</p>
+            </div>
+        </section>
+    </div>
+
+    <div id="tooltip" class="tooltip"></div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

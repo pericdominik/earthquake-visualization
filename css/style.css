@@ -1,0 +1,184 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #1a1f2c;
+    color: #f5f5f5;
+}
+
+.page {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+header {
+    margin-bottom: 24px;
+}
+
+header h1 {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+}
+
+header p {
+    margin: 0;
+    color: #b8c0d0;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: #252c3d;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #3a4358;
+}
+
+.stat-card h3 {
+    margin: 0 0 8px 0;
+    color: #b8c0d0;
+    font-size: 15px;
+}
+
+.stat-card p {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.dashboard {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.filters {
+    background: #252c3d;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #3a4358;
+}
+
+.filters h2 {
+    margin-top: 0;
+}
+
+.filters label {
+    display: block;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    color: #d0d6e2;
+}
+
+.filters select,
+.filters button {
+    width: 100%;
+    padding: 9px;
+    border-radius: 8px;
+    border: 1px solid #4a556d;
+    background: #151a25;
+    color: white;
+}
+
+.filters button {
+    margin-top: 18px;
+    background: #4a90e2;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.filters button:hover {
+    background: #6aa8f0;
+}
+
+.map-section {
+    background: #252c3d;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #3a4358;
+}
+
+.map-section h2 {
+    margin-top: 0;
+}
+
+#map {
+    width: 100%;
+    height: 560px;
+    display: block;
+    background: #111722;
+    border-radius: 10px;
+}
+
+.country {
+    fill: #3d4659;
+    stroke: #8a94a8;
+    stroke-width: 0.4;
+}
+
+.earthquake {
+    fill-opacity: 0.65;
+    stroke: white;
+    stroke-width: 0.4;
+    cursor: pointer;
+}
+
+.earthquake:hover {
+    stroke: #ffffff;
+    stroke-width: 1.5;
+    fill-opacity: 1;
+}
+
+.charts-placeholder {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.charts-placeholder div {
+    background: #252c3d;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #3a4358;
+}
+
+.charts-placeholder h3 {
+    margin-top: 0;
+}
+
+.charts-placeholder p {
+    color: #b8c0d0;
+}
+
+.tooltip {
+    position: absolute;
+    display: none;
+    background: #0f1420;
+    color: white;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #4a556d;
+    font-size: 14px;
+    pointer-events: none;
+    max-width: 280px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 900px) {
+    .stats,
+    .dashboard,
+    .charts-placeholder {
+        grid-template-columns: 1fr;
+    }
+}
