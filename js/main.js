@@ -32,6 +32,7 @@ Promise.all([
     drawMap(countries);
     prepareData(earthquakeData);
     populateYearFilter();
+    drawYearLineChart();
     updateVisualization();
 
 }).catch(error => {
@@ -92,6 +93,113 @@ function populateYearFilter() {
         .attr("class", "year-option")
         .attr("value", d => d)
         .text(d => d);
+}
+
+function drawYearLineChart() {
+    const chartWidth = 620;
+    const chartHeight = 280;
+
+    const margin = {
+        top: 20,
+        right: 25,
+        bottom: 45,
+        left: 60
+    };
+
+    const innerWidth = chartWidth - margin.left - margin.right;
+    const innerHeight = chartHeight - margin.top - margin.bottom;
+
+    const chartSvg = d3.select("#year-line-chart")
+        .attr("viewBox", `0 0 ${chartWidth} ${chartHeight}`);
+
+    chartSvg.selectAll("*").remove();
+
+    const earthquakesByYear = d3.rollups(
+        allEarthquakes,
+        v => v.length,
+        d => d.year
+    )
+        .map(([year, count]) => ({
+            year: +year,
+            count: count
+        }))
+        .sort((a, b) => d3.ascending(a.year, b.year));
+
+    const xScale = d3.scaleLinear()
+        .domain(d3.extent(earthquakesByYear, d => d.year))
+        .range([0, innerWidth]);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, d3.max(earthquakesByYear, d => d.count)])
+        .nice()
+        .range([innerHeight, 0]);
+
+    const chartGroup = chartSvg.append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    const xAxis = d3.axisBottom(xScale)
+        .tickFormat(d3.format("d"))
+        .ticks(8);
+
+    const yAxis = d3.axisLeft(yScale)
+        .ticks(6);
+
+    chartGroup.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(0, ${innerHeight})`)
+        .call(xAxis);
+
+    chartGroup.append("g")
+        .attr("class", "axis")
+        .call(yAxis);
+
+    const line = d3.line()
+        .x(d => xScale(d.year))
+        .y(d => yScale(d.count))
+        .curve(d3.curveMonotoneX);
+
+    chartGroup.append("path")
+        .datum(earthquakesByYear)
+        .attr("class", "line-chart-line")
+        .attr("d", line);
+
+    chartGroup.selectAll("circle")
+        .data(earthquakesByYear)
+        .enter()
+        .append("circle")
+        .attr("class", "line-chart-dot")
+        .attr("cx", d => xScale(d.year))
+        .attr("cy", d => yScale(d.count))
+        .attr("r", 4)
+        .on("mouseover", function (event, d) {
+            tooltip
+                .style("display", "block")
+                .html(`
+                    <strong>Godina: ${d.year}</strong><br>
+                    Broj potresa: ${d.count}
+                `);
+        })
+        .on("mousemove", moveTooltip)
+        .on("mouseout", hideTooltip)
+        .on("click", function (event, d) {
+            document.getElementById("year-filter").value = d.year;
+            updateVisualization();
+        });
+
+    chartSvg.append("text")
+        .attr("class", "chart-label")
+        .attr("x", chartWidth / 2)
+        .attr("y", chartHeight - 5)
+        .attr("text-anchor", "middle")
+        .text("Godina");
+
+    chartSvg.append("text")
+        .attr("class", "chart-label")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -chartHeight / 2)
+        .attr("y", 16)
+        .attr("text-anchor", "middle")
+        .text("Broj potresa");
 }
 
 function getFilteredData() {

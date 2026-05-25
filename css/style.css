@@ -140,27 +140,6 @@ header p {
     fill-opacity: 1;
 }
 
-.charts-placeholder {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-}
-
-.charts-placeholder div {
-    background: #252c3d;
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px solid #3a4358;
-}
-
-.charts-placeholder h3 {
-    margin-top: 0;
-}
-
-.charts-placeholder p {
-    color: #b8c0d0;
-}
-
 .tooltip {
     position: absolute;
     display: none;
@@ -179,6 +158,73 @@ header p {
     .stats,
     .dashboard,
     .charts-placeholder {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+.charts {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+}
+
+.chart-card {
+    background: #252c3d;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #3a4358;
+}
+
+.chart-card h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.chart-card p {
+    color: #b8c0d0;
+}
+
+#year-line-chart {
+    width: 100%;
+    height: 280px;
+    display: block;
+}
+
+.axis path,
+.axis line {
+    stroke: #8a94a8;
+}
+
+.axis text {
+    fill: #d0d6e2;
+    font-size: 12px;
+}
+
+.line-chart-line {
+    fill: none;
+    stroke: #4a90e2;
+    stroke-width: 3;
+}
+
+.line-chart-dot {
+    fill: #4a90e2;
+    stroke: white;
+    stroke-width: 1;
+    cursor: pointer;
+}
+
+.line-chart-dot:hover {
+    fill: #ffffff;
+}
+
+.chart-label {
+    fill: #d0d6e2;
+    font-size: 12px;
+}
+
+@media (max-width: 900px) {
+    .charts {
         grid-template-columns: 1fr;
     }
 }
