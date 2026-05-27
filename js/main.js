@@ -95,9 +95,93 @@ function populateYearFilter() {
         .text(d => d);
 }
 
+
+function getFilteredData() {
+    const selectedYear = document.getElementById("year-filter").value;
+    const selectedMagnitude = +document.getElementById("magnitude-filter").value;
+
+    return allEarthquakes.filter(d => {
+        const yearMatch = selectedYear === "all" || d.year === +selectedYear;
+        const magnitudeMatch = d.mag >= selectedMagnitude;
+
+        return yearMatch && magnitudeMatch;
+    });
+}
+
+function updateVisualization() {
+    const filteredData = getFilteredData();
+
+    const circles = svg.selectAll("circle.earthquake")
+        .data(filteredData, d => d.time + d.place);
+
+    circles.exit()
+        .transition()
+        .duration(500)
+        .attr("r", 0)
+        .remove();
+
+    circles.enter()
+        .append("circle")
+        .attr("class", "earthquake")
+        .attr("cx", d => projection([d.longitude, d.latitude])[0])
+        .attr("cy", d => projection([d.longitude, d.latitude])[1])
+        .attr("r", 0)
+        .attr("fill", d => colorScale(d.depth))
+        .on("mouseover", showTooltip)
+        .on("mousemove", moveTooltip)
+        .on("mouseout", hideTooltip)
+        .transition()
+        .duration(700)
+        .attr("r", d => radiusScale(d.mag));
+
+    circles.transition()
+        .duration(700)
+        .attr("cx", d => projection([d.longitude, d.latitude])[0])
+        .attr("cy", d => projection([d.longitude, d.latitude])[1])
+        .attr("r", d => radiusScale(d.mag))
+        .attr("fill", d => colorScale(d.depth));
+
+
+    drawMagnitudeBarChart(filteredData);
+
+    console.log("Trenutno prikazani potresi:", filteredData.length);
+}
+
+function showTooltip(event, d) {
+    tooltip
+        .style("display", "block")
+        .html(`
+            <strong>${d.place}</strong><br>
+            Datum: ${d.date.toLocaleDateString("hr-HR")}<br>
+            Magnituda: ${d.mag}<br>
+            Dubina: ${d.depth} km
+        `);
+}
+
+function moveTooltip(event) {
+    tooltip
+        .style("left", `${event.pageX + 12}px`)
+        .style("top", `${event.pageY + 12}px`);
+}
+
+function hideTooltip() {
+    tooltip.style("display", "none");
+}
+
+document.getElementById("year-filter").addEventListener("change", updateVisualization);
+document.getElementById("magnitude-filter").addEventListener("change", updateVisualization);
+
+document.getElementById("reset-btn").addEventListener("click", () => {
+    document.getElementById("year-filter").value = "all";
+    document.getElementById("magnitude-filter").value = "5.5";
+    updateVisualization();
+});
+
+
+
 function drawYearLineChart() {
-    const chartWidth = 620;
-    const chartHeight = 280;
+    const chartWidth = 650;
+    const chartHeight = 320;
 
     const margin = {
         top: 20,
@@ -202,80 +286,118 @@ function drawYearLineChart() {
         .text("Broj potresa");
 }
 
-function getFilteredData() {
-    const selectedYear = document.getElementById("year-filter").value;
-    const selectedMagnitude = +document.getElementById("magnitude-filter").value;
 
-    return allEarthquakes.filter(d => {
-        const yearMatch = selectedYear === "all" || d.year === +selectedYear;
-        const magnitudeMatch = d.mag >= selectedMagnitude;
-
-        return yearMatch && magnitudeMatch;
-    });
+function getMagnitudeCategory(mag) {
+    if (mag < 6.0) {
+        return "5.5-5.9";
+    } else if (mag < 6.5) {
+        return "6.0-6.4";
+    } else if (mag < 7.0) {
+        return "6.5-6.9";
+    } else {
+        return "7.0+";
+    }
 }
 
-function updateVisualization() {
-    const filteredData = getFilteredData();
+function drawMagnitudeBarChart(data) {
+    const chartWidth = 520;
+    const chartHeight = 320;
 
-    const circles = svg.selectAll("circle.earthquake")
-        .data(filteredData, d => d.time + d.place);
+    const margin = {
+        top: 20,
+        right: 20,
+        bottom: 45,
+        left: 55
+    };
 
-    circles.exit()
-        .transition()
-        .duration(500)
-        .attr("r", 0)
-        .remove();
+    const innerWidth = chartWidth - margin.left - margin.right;
+    const innerHeight = chartHeight - margin.top - margin.bottom;
 
-    circles.enter()
-        .append("circle")
-        .attr("class", "earthquake")
-        .attr("cx", d => projection([d.longitude, d.latitude])[0])
-        .attr("cy", d => projection([d.longitude, d.latitude])[1])
-        .attr("r", 0)
-        .attr("fill", d => colorScale(d.depth))
-        .on("mouseover", showTooltip)
+    const chartSvg = d3.select("#magnitude-bar-chart")
+        .attr("viewBox", `0 0 ${chartWidth} ${chartHeight}`);
+
+    chartSvg.selectAll("*").remove();
+
+    const categories = ["5.5-5.9", "6.0-6.4", "6.5-6.9", "7.0+"];
+
+    const counts = categories.map(category => ({
+        category: category,
+        count: data.filter(d => getMagnitudeCategory(d.mag) === category).length
+    }));
+
+    const xScale = d3.scaleBand()
+        .domain(categories)
+        .range([0, innerWidth])
+        .padding(0.25);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, d3.max(counts, d => d.count) || 1])
+        .nice()
+        .range([innerHeight, 0]);
+
+    const chartGroup = chartSvg.append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    const xAxis = d3.axisBottom(xScale);
+
+    const yAxis = d3.axisLeft(yScale)
+        .ticks(5);
+
+    chartGroup.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(0, ${innerHeight})`)
+        .call(xAxis);
+
+    chartGroup.append("g")
+        .attr("class", "axis")
+        .call(yAxis);
+
+    const bars = chartGroup.selectAll("rect")
+        .data(counts, d => d.category);
+
+    bars.enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", d => xScale(d.category))
+        .attr("y", innerHeight)
+        .attr("width", xScale.bandwidth())
+        .attr("height", 0)
+        .on("mouseover", function (event, d) {
+            tooltip
+                .style("display", "block")
+                .html(`
+                    <strong>Magnituda: ${d.category}</strong><br>
+                    Broj potresa: ${d.count}
+                `);
+        })
         .on("mousemove", moveTooltip)
         .on("mouseout", hideTooltip)
         .transition()
         .duration(700)
-        .attr("r", d => radiusScale(d.mag));
+        .attr("y", d => yScale(d.count))
+        .attr("height", d => innerHeight - yScale(d.count));
 
-    circles.transition()
-        .duration(700)
-        .attr("cx", d => projection([d.longitude, d.latitude])[0])
-        .attr("cy", d => projection([d.longitude, d.latitude])[1])
-        .attr("r", d => radiusScale(d.mag))
-        .attr("fill", d => colorScale(d.depth));
+    chartGroup.selectAll(".bar-label")
+        .data(counts)
+        .enter()
+        .append("text")
+        .attr("class", "bar-label")
+        .attr("x", d => xScale(d.category) + xScale.bandwidth() / 2)
+        .attr("y", d => yScale(d.count) - 6)
+        .text(d => d.count > 0 ? d.count : "");
 
-    console.log("Trenutno prikazani potresi:", filteredData.length);
+    chartSvg.append("text")
+        .attr("class", "chart-label")
+        .attr("x", chartWidth / 2)
+        .attr("y", chartHeight - 5)
+        .attr("text-anchor", "middle")
+        .text("Raspon magnitude");
+
+    chartSvg.append("text")
+        .attr("class", "chart-label")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -chartHeight / 2)
+        .attr("y", 15)
+        .attr("text-anchor", "middle")
+        .text("Broj potresa");
 }
-
-function showTooltip(event, d) {
-    tooltip
-        .style("display", "block")
-        .html(`
-            <strong>${d.place}</strong><br>
-            Datum: ${d.date.toLocaleDateString("hr-HR")}<br>
-            Magnituda: ${d.mag}<br>
-            Dubina: ${d.depth} km
-        `);
-}
-
-function moveTooltip(event) {
-    tooltip
-        .style("left", `${event.pageX + 12}px`)
-        .style("top", `${event.pageY + 12}px`);
-}
-
-function hideTooltip() {
-    tooltip.style("display", "none");
-}
-
-document.getElementById("year-filter").addEventListener("change", updateVisualization);
-document.getElementById("magnitude-filter").addEventListener("change", updateVisualization);
-
-document.getElementById("reset-btn").addEventListener("click", () => {
-    document.getElementById("year-filter").value = "all";
-    document.getElementById("magnitude-filter").value = "5.5";
-    updateVisualization();
-});
