@@ -111,6 +111,8 @@ function getFilteredData() {
 function updateVisualization() {
     const filteredData = getFilteredData();
 
+    document.getElementById("filtered-earthquakes").textContent = filteredData.length;
+
     const circles = svg.selectAll("circle.earthquake")
         .data(filteredData, d => d.time + d.place);
 

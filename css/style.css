@@ -31,7 +31,7 @@ header p {
 
 .stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-bottom: 24px;
 }
@@ -280,4 +280,80 @@ header p {
 .scatter-dot:hover {
     opacity: 1;
     stroke-width: 1.2;
+}
+
+
+
+.legend {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #3a4358;
+}
+
+.legend h3 {
+    margin: 0 0 12px 0;
+    font-size: 18px;
+}
+
+.legend-section {
+    margin-bottom: 18px;
+}
+
+.legend-title {
+    margin: 0 0 8px 0;
+    color: #b8c0d0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.legend-item,
+.legend-size-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: #d0d6e2;
+    font-size: 14px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.legend-color.shallow {
+    background: #e60000;
+}
+
+.legend-color.medium-depth {
+    background: #ff7f00;
+}
+
+.legend-color.deep {
+    background: #ffd166;
+}
+
+.size-circle {
+    display: inline-block;
+    border-radius: 50%;
+    background: #ff7f00;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.size-circle.small {
+    width: 8px;
+    height: 8px;
+}
+
+.size-circle.medium {
+    width: 14px;
+    height: 14px;
+}
+
+.size-circle.large {
+    width: 22px;
+    height: 22px;
 }

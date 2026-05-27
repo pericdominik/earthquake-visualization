@@ -27,6 +27,11 @@
             </div>
 
             <div class="stat-card">
+                <h3>Trenutno prikazano</h3>
+                <p id="filtered-earthquakes">Učitavanje...</p>
+            </div>
+
+            <div class="stat-card">
                 <h3>Raspon godina</h3>
                 <p>2000 - 2025</p>
             </div>
@@ -56,6 +61,48 @@
                 </select>
 
                 <button id="reset-btn">Reset filtera</button>
+
+                <div class="legend">
+                    <h3>Legenda</h3>
+
+                    <div class="legend-section">
+                        <p class="legend-title">Dubina potresa</p>
+
+                        <div class="legend-item">
+                            <span class="legend-color shallow"></span>
+                            <span>Plitki potresi</span>
+                        </div>
+
+                        <div class="legend-item">
+                            <span class="legend-color medium-depth"></span>
+                            <span>Srednje duboki</span>
+                        </div>
+
+                        <div class="legend-item">
+                            <span class="legend-color deep"></span>
+                            <span>Duboki potresi</span>
+                        </div>
+                    </div>
+
+                    <div class="legend-section">
+                        <p class="legend-title">Magnituda</p>
+
+                        <div class="legend-size-row">
+                            <span class="size-circle small"></span>
+                            <span>5.5</span>
+                        </div>
+
+                        <div class="legend-size-row">
+                            <span class="size-circle medium"></span>
+                            <span>7.0</span>
+                        </div>
+
+                        <div class="legend-size-row">
+                            <span class="size-circle large"></span>
+                            <span>9.0</span>
+                        </div>
+                    </div>
+                </div>
             </aside>
 
             <section class="map-section">
