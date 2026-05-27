@@ -261,3 +261,23 @@ header p {
     font-size: 12px;
     text-anchor: middle;
 }
+
+
+#depth-scatter-chart {
+    width: 100%;
+    height: 340px;
+    display: block;
+}
+
+.scatter-dot {
+    fill: #ff7f00;
+    opacity: 0.45;
+    stroke: white;
+    stroke-width: 0.3;
+    cursor: pointer;
+}
+
+.scatter-dot:hover {
+    opacity: 1;
+    stroke-width: 1.2;
+}

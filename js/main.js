@@ -143,6 +143,7 @@ function updateVisualization() {
 
 
     drawMagnitudeBarChart(filteredData);
+    drawDepthScatterChart(filteredData);
 
     console.log("Trenutno prikazani potresi:", filteredData.length);
 }
@@ -400,4 +401,90 @@ function drawMagnitudeBarChart(data) {
         .attr("y", 15)
         .attr("text-anchor", "middle")
         .text("Broj potresa");
+}
+
+
+function drawDepthScatterChart(data) {
+    const chartWidth = 1000;
+    const chartHeight = 340;
+
+    const margin = {
+        top: 25,
+        right: 35,
+        bottom: 55,
+        left: 70
+    };
+
+    const innerWidth = chartWidth - margin.left - margin.right;
+    const innerHeight = chartHeight - margin.top - margin.bottom;
+
+    const chartSvg = d3.select("#depth-scatter-chart")
+        .attr("viewBox", `0 0 ${chartWidth} ${chartHeight}`);
+
+    chartSvg.selectAll("*").remove();
+
+    const xScale = d3.scaleLinear()
+        .domain([5.5, d3.max(data, d => d.mag) || 9.5])
+        .nice()
+        .range([0, innerWidth]);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.depth) || 700])
+        .nice()
+        .range([innerHeight, 0]);
+
+    const chartGroup = chartSvg.append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    const xAxis = d3.axisBottom(xScale)
+        .ticks(8);
+
+    const yAxis = d3.axisLeft(yScale)
+        .ticks(6);
+
+    chartGroup.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(0, ${innerHeight})`)
+        .call(xAxis);
+
+    chartGroup.append("g")
+        .attr("class", "axis")
+        .call(yAxis);
+
+    chartGroup.selectAll("circle")
+        .data(data, d => d.time + d.place)
+        .enter()
+        .append("circle")
+        .attr("class", "scatter-dot")
+        .attr("cx", d => xScale(d.mag))
+        .attr("cy", d => yScale(d.depth))
+        .attr("r", 3)
+        .attr("fill", d => colorScale(d.depth))
+        .on("mouseover", function (event, d) {
+            tooltip
+                .style("display", "block")
+                .html(`
+                    <strong>${d.place}</strong><br>
+                    Datum: ${d.date.toLocaleDateString("hr-HR")}<br>
+                    Magnituda: ${d.mag}<br>
+                    Dubina: ${d.depth} km
+                `);
+        })
+        .on("mousemove", moveTooltip)
+        .on("mouseout", hideTooltip);
+
+    chartSvg.append("text")
+        .attr("class", "chart-label")
+        .attr("x", chartWidth / 2)
+        .attr("y", chartHeight - 8)
+        .attr("text-anchor", "middle")
+        .text("Magnituda");
+
+    chartSvg.append("text")
+        .attr("class", "chart-label")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -chartHeight / 2)
+        .attr("y", 18)
+        .attr("text-anchor", "middle")
+        .text("Dubina potresa (km)");
 }
