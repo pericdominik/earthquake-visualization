@@ -20,7 +20,12 @@ const colorScale = d3.scaleLinear()
     .domain([0, 70, 300, 700])
     .range(["#e60000", "#ff7f00", "#ffd166", "#fff3b0"]);
 
+
 let allEarthquakes = [];
+let availableYears = [];
+let animationInterval = null;
+let currentAnimationIndex = 0;
+
 
 Promise.all([
     d3.json("data/countries-110m.json"),
@@ -82,12 +87,12 @@ function prepareData(data) {
 }
 
 function populateYearFilter() {
-    const years = Array.from(new Set(allEarthquakes.map(d => d.year))).sort();
+    availableYears = Array.from(new Set(allEarthquakes.map(d => d.year))).sort();
 
     const yearFilter = d3.select("#year-filter");
 
     yearFilter.selectAll("option.year-option")
-        .data(years)
+        .data(availableYears)
         .enter()
         .append("option")
         .attr("class", "year-option")
@@ -188,11 +193,15 @@ function hideTooltip() {
 document.getElementById("year-filter").addEventListener("change", updateVisualization);
 document.getElementById("magnitude-filter").addEventListener("change", updateVisualization);
 document.getElementById("depth-filter").addEventListener("change", updateVisualization);
+document.getElementById("play-years-btn").addEventListener("click", startYearAnimation);
 
 document.getElementById("reset-btn").addEventListener("click", () => {
+    stopYearAnimation();
+
     document.getElementById("year-filter").value = "all";
     document.getElementById("magnitude-filter").value = "5.5";
     document.getElementById("depth-filter").value = "all";
+
     updateVisualization();
 });
 
@@ -550,4 +559,46 @@ function drawStrongestEarthquakes(data) {
     items.append("div")
         .attr("class", "strongest-mag")
         .text(d => `M ${d.mag}`);
+}
+
+
+function startYearAnimation() {
+    const playButton = document.getElementById("play-years-btn");
+
+    if (animationInterval !== null) {
+        stopYearAnimation();
+        return;
+    }
+
+    playButton.textContent = "Zaustavi animaciju";
+
+    const selectedYear = document.getElementById("year-filter").value;
+
+    if (selectedYear !== "all") {
+        const selectedIndex = availableYears.indexOf(+selectedYear);
+        currentAnimationIndex = selectedIndex >= 0 ? selectedIndex : 0;
+    } else {
+        currentAnimationIndex = 0;
+    }
+
+    animationInterval = setInterval(() => {
+        const year = availableYears[currentAnimationIndex];
+
+        document.getElementById("year-filter").value = year;
+        updateVisualization();
+
+        currentAnimationIndex++;
+
+        if (currentAnimationIndex >= availableYears.length) {
+            currentAnimationIndex = 0;
+        }
+    }, 3000);
+}
+
+function stopYearAnimation() {
+    const playButton = document.getElementById("play-years-btn");
+
+    clearInterval(animationInterval);
+    animationInterval = null;
+    playButton.textContent = "Pokreni animaciju";
 }

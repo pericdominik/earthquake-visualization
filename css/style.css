@@ -397,3 +397,12 @@ header p {
     font-weight: bold;
     color: #ff7f00;
 }
+
+
+#play-years-btn {
+    background: #ff7f00;
+}
+
+#play-years-btn:hover {
+    background: #ff9f33;
+}
