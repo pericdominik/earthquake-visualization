@@ -96,15 +96,28 @@ function populateYearFilter() {
 }
 
 
+function getDepthCategory(depth) {
+    if (depth < 70) {
+        return "shallow";
+    } else if (depth < 300) {
+        return "medium";
+    } else {
+        return "deep";
+    }
+}
+
+
 function getFilteredData() {
     const selectedYear = document.getElementById("year-filter").value;
     const selectedMagnitude = +document.getElementById("magnitude-filter").value;
+    const selectedDepth = document.getElementById("depth-filter").value;
 
     return allEarthquakes.filter(d => {
         const yearMatch = selectedYear === "all" || d.year === +selectedYear;
         const magnitudeMatch = d.mag >= selectedMagnitude;
+        const depthMatch = selectedDepth === "all" || getDepthCategory(d.depth) === selectedDepth;
 
-        return yearMatch && magnitudeMatch;
+        return yearMatch && magnitudeMatch && depthMatch;
     });
 }
 
@@ -174,10 +187,12 @@ function hideTooltip() {
 
 document.getElementById("year-filter").addEventListener("change", updateVisualization);
 document.getElementById("magnitude-filter").addEventListener("change", updateVisualization);
+document.getElementById("depth-filter").addEventListener("change", updateVisualization);
 
 document.getElementById("reset-btn").addEventListener("click", () => {
     document.getElementById("year-filter").value = "all";
     document.getElementById("magnitude-filter").value = "5.5";
+    document.getElementById("depth-filter").value = "all";
     updateVisualization();
 });
 
