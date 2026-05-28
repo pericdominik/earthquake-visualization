@@ -23,7 +23,7 @@ const colorScale = d3.scaleLinear()
 let allEarthquakes = [];
 
 Promise.all([
-    d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"),
+    d3.json("data/countries-110m.json"),
     d3.csv("data/earthquake.csv")
 ]).then(([worldData, earthquakeData]) => {
 
@@ -146,6 +146,7 @@ function updateVisualization() {
 
     drawMagnitudeBarChart(filteredData);
     drawDepthScatterChart(filteredData);
+    drawStrongestEarthquakes(filteredData);
 
     console.log("Trenutno prikazani potresi:", filteredData.length);
 }
@@ -489,4 +490,49 @@ function drawDepthScatterChart(data) {
         .attr("y", 18)
         .attr("text-anchor", "middle")
         .text("Dubina potresa (km)");
+}
+
+
+function drawStrongestEarthquakes(data) {
+    const listContainer = d3.select("#strongest-earthquakes-list");
+
+    listContainer.selectAll("*").remove();
+
+    const strongestEarthquakes = [...data]
+        .sort((a, b) => d3.descending(a.mag, b.mag))
+        .slice(0, 10);
+
+    if (strongestEarthquakes.length === 0) {
+        listContainer
+            .append("p")
+            .text("Nema potresa za odabrane filtere.");
+        return;
+    }
+
+    const list = listContainer
+        .append("div")
+        .attr("class", "strongest-list");
+
+    const items = list.selectAll(".strongest-item")
+        .data(strongestEarthquakes)
+        .enter()
+        .append("div")
+        .attr("class", "strongest-item");
+
+    items.append("div")
+        .attr("class", "strongest-rank")
+        .text((d, i) => `${i + 1}.`);
+
+    const info = items.append("div")
+        .attr("class", "strongest-info");
+
+    info.append("strong")
+        .text(d => d.place);
+
+    info.append("span")
+        .text(d => `${d.date.toLocaleDateString("hr-HR")} | Dubina: ${d.depth} km`);
+
+    items.append("div")
+        .attr("class", "strongest-mag")
+        .text(d => `M ${d.mag}`);
 }

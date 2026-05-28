@@ -357,3 +357,43 @@ header p {
     width: 22px;
     height: 22px;
 }
+
+
+.strongest-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.strongest-item {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    background: #151a25;
+    border: 1px solid #3a4358;
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
+.strongest-rank {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4a90e2;
+}
+
+.strongest-info strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.strongest-info span {
+    color: #b8c0d0;
+    font-size: 13px;
+}
+
+.strongest-mag {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ff7f00;
+}
